@@ -1,7 +1,9 @@
+from re import L
 import torch
 from torch import nn
 from torch.utils.data import Dataset
 import torch.nn.functional as F
+from transformers import BertModel, BertTokenizer
 
 
 class RNModel(nn.Module):
@@ -18,6 +20,18 @@ class RNModel(nn.Module):
         x = self.fc2(x)
         x = self.out(x)
         x = F.one_hot(x, num_classes=1)
+        
+class BertBased(nn.Module):
+    def __init__(self, num_classes, bert_config='bert-large-uncased'):
+        super(BertBased, self).__init__()
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.bert = BertModel.from_pretrained(bert_config).to(device)
+        # For each word
+        self.fc = nn.Linear(1024, num_classes)
+    
+    def forward(self, x):
+        x = self.bert(x)
+        return self.fc(x)
 
 
 class RNNDataset(Dataset):
