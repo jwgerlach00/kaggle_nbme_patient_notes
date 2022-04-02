@@ -1,8 +1,22 @@
-# print(word_lists[0])
-# data['annotation'].iloc[0]
+import numpy as np
+from stse import bytes
 
-find_sublist(['dad', 'with', 'recent', 'heart', 'attcak\r\nAll:'], list(word_lists[0]))
-print(word_lists[0][111])
+
+def str_vectorizer(word_list, rubric):
+    out = []
+    for word in word_list:
+        if word in rubric:
+            encoded_word = bytes.bit_vect(
+                len(rubric) + 1,  # Add 1 or NONE option
+                rubric.index(word)
+            )
+        else:
+            # Set to NONE (hot at last index)
+            encoded_word = bytes.bit_vect(len(rubric) + 1, len(rubric))
+        out.append(encoded_word)
+    
+    return np.array(out)
+
 
 def find_sublist(sl, l):
     print(sl)
@@ -13,14 +27,14 @@ def find_sublist(sl, l):
         if l[ind:(ind + sll)] == sl:
             results.append((ind, ind + sll - 1))
     return results
+    
+
+def test_str_vectorizer():
+    test_case = ['a', 'b', 'bg', 'g']
+    test_rubric = ['bg', 'a']
+    
+    str_vectorizer(test_case, test_rubric)
 
 
-
-
-data['annotation'].iloc[0]
-word_lists[0]
-for word in word_lists[0]:
-    if word in data['annotation'].iloc[0]:
-        print(word)
-        
-print(all(data['annotation'].iloc[0] in word_lists[0])
+if __name__ == '__main__':
+    test_str_vectorizer()
